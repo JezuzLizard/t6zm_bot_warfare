@@ -1,8 +1,11 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 Finder( eObj )
 {
 	answer = [];
@@ -116,7 +119,7 @@ GoDoPowerup( eObj )
 	powerup = eObj.eent;
 	
 	// go to it
-	self SetScriptGoal( powerup.origin, 32 );
+	self SetScriptGoalEnt( powerup, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

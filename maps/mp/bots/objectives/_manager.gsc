@@ -1,8 +1,11 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 init()
 {
 	level.bot_objectives = [];

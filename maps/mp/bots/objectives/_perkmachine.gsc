@@ -1,8 +1,11 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 init()
 {
 	vending_triggers = getentarray( "zombie_vending", "targetname" );
@@ -255,7 +258,7 @@ GoDoPerkMachine( eObj )
 	
 	// go to machine
 	self thread WatchToGoToMachine( vending );
-	self SetScriptGoal( org, 32 );
+	self SetScriptGoalPos( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

@@ -1,8 +1,11 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 Finder( eObj )
 {
 	Players = level.players;
@@ -176,7 +179,7 @@ GoDoRevive( eObj )
 	// go to guy
 	self thread WatchToGoToGuy( revivee );
 	self SetPriorityObjective();
-	self SetScriptGoal( revivee.origin, 32 );
+	self SetScriptGoalEnt( revivee, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

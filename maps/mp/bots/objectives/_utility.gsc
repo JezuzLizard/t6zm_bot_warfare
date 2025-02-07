@@ -2,6 +2,8 @@
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 {
 	Answer = spawnstruct();

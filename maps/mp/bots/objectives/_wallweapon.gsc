@@ -1,8 +1,11 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 Finder( eObj )
 {
 	answer = [];
@@ -44,7 +47,7 @@ Finder( eObj )
 		
 		if ( !player_has_weapon || is_grenade )
 		{
-			func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_weapons", "get_weapon_cost" );
+			func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_weapons", "get_weapon_cost" );
 			
 			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
@@ -53,7 +56,7 @@ Finder( eObj )
 		}
 		else
 		{
-			func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_weapons", "get_ammo_cost" );
+			func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_weapons", "get_ammo_cost" );
 			
 			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
@@ -206,7 +209,7 @@ GoDoWallweapon( eObj )
 	
 	// go to weapon
 	self thread WatchToGoToWeapon( weapon );
-	self SetScriptGoal( org, 32 );
+	self SetScriptGoalPos( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

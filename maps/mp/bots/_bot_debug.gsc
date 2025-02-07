@@ -9,7 +9,10 @@
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 init()
 {
 	if ( getdvar( "bots_main_debug" ) == "" )
@@ -92,7 +95,7 @@ watch_for_unlink()
 	self endon( "disconnect" );
 	self endon( "zombified" );
 	
-	self BotBuiltinNotifyOnPlayerCommand( "+smoke", "toggle_unlink" );
+	self scripts\zm\pluto_sys::notifyonplayercommand( "+smoke", "toggle_unlink" );
 	
 	for ( ;; )
 	{
@@ -106,7 +109,7 @@ watch_for_unlink()
 		
 		firstwp = level.waypoints[ self.closest ];
 		
-		self iprintln( "wp selected for unlink: " + firstwp BotBuiltinGetNodeNumber() );
+		self iprintln( "wp selected for unlink: " + firstwp scripts\zm\pluto_sys::getnodenumber() );
 		
 		self waittill( "toggle_unlink" );
 		
@@ -136,15 +139,15 @@ array_contains( arr, it )
 toggle_link( firstwp, secondwp )
 {
 	// check if it exists
-	key = firstwp BotBuiltinGetNodeNumber() + "";
-	secnum = secondwp BotBuiltinGetNodeNumber();
+	key = firstwp scripts\zm\pluto_sys::getnodenumber() + "";
+	secnum = secondwp scripts\zm\pluto_sys::getnodenumber();
 	
-	links = firstwp BotBuiltinGetLinkedNodes();
+	links = firstwp scripts\zm\pluto_sys::getlinkednodes();
 	linked = false;
 	
 	for ( i = 0; i < links.size; i++ )
 	{
-		if ( links[ i ] BotBuiltinGetNodeNumber() == secnum )
+		if ( links[ i ] scripts\zm\pluto_sys::getnodenumber() == secnum )
 		{
 			linked = true;
 			break;
@@ -172,7 +175,6 @@ toggle_link( firstwp, secondwp )
 		if ( !isdefined( a ) )
 		{
 			a = [];
-			assert(false);
 		}
 		
 		if ( a.size <= 0 )
@@ -185,7 +187,7 @@ toggle_link( firstwp, secondwp )
 		}
 		
 		self iprintln( "removed unlink: " + key + " " + secnum );
-		BotBuiltinPrintConsole( "toggle_link: add: " + key + " " + secnum );
+		scripts\zm\pluto_sys::PrintConsole( "toggle_link: add: " + key + " " + secnum );
 	}
 	else
 	{
@@ -200,7 +202,7 @@ toggle_link( firstwp, secondwp )
 		level.bot_ignore_links[ key ] = a;
 		
 		self iprintln( "added unlink: " + key + " " + secnum );
-		BotBuiltinPrintConsole( "toggle_link: del: " + key + " " + secnum );
+		scripts\zm\pluto_sys::PrintConsole( "toggle_link: del: " + key + " " + secnum );
 	}
 }
 
@@ -230,15 +232,15 @@ debug()
 			
 			if ( distance( level.waypoints[ i ].origin, self.origin ) < getdvarfloat( "bots_main_debug_distance" ) && ( sighttracepassed( myEye, wpOrg, false, self ) || getdvarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getdvarfloat( "bots_main_debug_cone" ) )
 			{
-				linked = level.waypoints[ i ] BotBuiltinGetLinkedNodes();
-				node_num_str = level.waypoints[ i ] BotBuiltinGetNodeNumber() + "";
+				linked = level.waypoints[ i ] scripts\zm\pluto_sys::getlinkednodes();
+				node_num_str = level.waypoints[ i ] scripts\zm\pluto_sys::getnodenumber() + "";
 				
 				for ( h = linked.size - 1; h >= 0; h-- )
 				{
 					if ( isdefined( level.bot_ignore_links[ node_num_str ] ) )
 					{
 						found = false;
-						this_node_num = linked[ h ] BotBuiltinGetNodeNumber();
+						this_node_num = linked[ h ] scripts\zm\pluto_sys::getnodenumber();
 						
 						for ( j = 0; j < level.bot_ignore_links[ node_num_str ].size; j++ )
 						{

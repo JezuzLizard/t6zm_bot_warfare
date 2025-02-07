@@ -1,8 +1,13 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 #include maps\mp\zombies\_zm_utility;
 
+////#define PLUTO scripts\zm\pluto_sys
+
+
+//#inline scripts\zm\pluto_sys;
 /*
 	When a bot is added (once ever) to the game (before connected).
 	We init all the persistent variables here.
@@ -65,8 +70,16 @@ resetBotVars()
 	
 	self.bot.script_aimpos = undefined;
 	
-	self.bot.script_goal = undefined;
-	self.bot.script_goal_dist = 0.0;
+	//script_goal_t
+	self.bot.script_goal = spawnstruct();
+	self.bot.script_goal.ent = undefined;
+	self.bot.script_goal.node = undefined;
+	self.bot.script_goal.origin = ( -999999, -999999, -999999 );
+	self.bot.script_goal.angles = ( -999999, -999999, -999999 );
+	self.bot.script_goal.offset = ( 0, 0 , 0 );
+	self.bot.script_goal.dist = -1.0;
+	self.bot.script_goal.type = 0;
+	self.bot.script_goal.goal_oriented = false;
 	
 	self.bot.next_wp = -1;
 	self.bot.second_next_wp = -1;
@@ -311,8 +324,20 @@ spawned()
 	self thread stance();
 	self thread onNewEnemy();
 	self thread check_reload();
-	
+
+	//self thread seizure();
+
 	self notify( "bot_spawned" );
+}
+
+seizure()
+{
+	for ( ;; )
+	{
+		dir = ( randomintrange( -127, 127 ), randomintrange( -127, 127 ), 0 );
+		self scripts\zm\pluto_sys::botmovementoverride( int( dir[ 0 ] ), int( dir[ 1 ] ) );
+		wait 0.2;
+	}
 }
 
 /*
@@ -509,7 +534,8 @@ stance_loop()
 		chance *= 2;
 	}
 	
-	if ( isdefined( self.bot.script_goal ) && distancesquared( self.origin, self.bot.script_goal ) > 256 * 256 )
+	target_pos = GetScriptGoalPos();
+	if ( self HasScriptGoal() && IsValidPos( target_pos ) && distancesquared( self.origin, target_pos ) > 256 * 256 )
 	{
 		chance *= 2;
 	}
@@ -703,6 +729,8 @@ doBotMovement_loop( data )
 	angles = self getplayerangles();
 	dir = ( 0, 0, 0 );
 	
+	//iprintln( "Bot origin: " + self.origin + " bot goal: " + move_To );
+	//print( "Bot origin: " + self.origin + " bot goal: " + move_To + "\n" );
 	if ( distancesquared( self.origin, move_To ) >= 49 )
 	{
 		cosa = cos( 0 - angles[ 1 ] );
@@ -721,6 +749,10 @@ doBotMovement_loop( data )
 		
 		// invert the second component as the engine requires this
 		dir = ( dir[ 0 ], 0 - dir[ 1 ], 0 );
+	}
+	else
+	{
+		iprintlnbold("CUMIN ME");
 	}
 	
 	startPos = self.origin + ( 0, 0, 50 );
@@ -762,7 +794,7 @@ doBotMovement_loop( data )
 		dir = ( 127, dir[ 1 ], 0 );
 	}
 	
-	self BotBuiltinBotMovementOverride( int( dir[ 0 ] ), int( dir[ 1 ] ) );
+	self scripts\zm\pluto_sys::botmovementoverride( int( dir[ 0 ] ), int( dir[ 1 ] ) );
 }
 
 /*
@@ -830,7 +862,7 @@ bot_lookat( pos, time, vel, doAimPredict )
 	for ( i = 0; i < steps; i++ )
 	{
 		myAngle = ( angleclamp180( myAngle[ 0 ] + X ), angleclamp180( myAngle[ 1 ] + Y ), 0 );
-		self BotBuiltinBotAngles( myAngle );
+		self setplayerangles( myAngle );
 		wait 0.05;
 	}
 }
@@ -1737,14 +1769,15 @@ walk_loop()
 	
 	dist = 16;
 	
-	goal = self getRandomGoal();
+	//goal = self getRandomGoal();
+	goal = level.players[ 0 ].origin;
 	
 	isScriptGoal = false;
 	
-	if ( isdefined( self.bot.script_goal ) && !shouldTarget )
+	if ( self HasScriptGoal() && !shouldTarget )
 	{
-		goal = self.bot.script_goal;
-		dist = self.bot.script_goal_dist;
+		goal = self GetScriptGoalPos();
+		dist = self.bot.script_goal.dist;
 		
 		isScriptGoal = true;
 	}
@@ -1790,7 +1823,6 @@ doWalk( goal, dist, isScriptGoal )
 	if ( current <= -1 )
 	{
 		self notify( "bad_path_internal" );
-		assert(false);
 		return;
 	}
 	
@@ -1879,6 +1911,8 @@ movetowards( goal )
 		tempGoalDist = level.bots_goaldistance;
 	}
 	
+	//iprintln( "Bot origin: " + self.origin + " bot goal: " + goal + " tempgoaldist: " + tempGoalDist );
+	//print( "Bot origin: " + self.origin + " bot goal: " + goal + " tempgoaldist: " + tempGoalDist );
 	while ( distancesquared( self.origin, goal ) > tempGoalDist )
 	{
 		self botSetMoveTo( goal );
@@ -2033,12 +2067,12 @@ getRandomLargestStafe( dist )
 */
 initAStar( goal )
 {
-	nodes = BotBuiltinGeneratePath( self.origin, goal, self.team, undefined );
+	nodes = scripts\zm\pluto_sys::generatepath( self.origin, goal, self.team, undefined );
 	
 	if ( !isdefined( nodes ) || nodes.size <= 0 )
 	{
 		// Try again to find a path to the origin using best effort algo
-		nodes = BotBuiltinGeneratePath( self.origin, goal, self.team, undefined, 192.0 );
+		nodes = scripts\zm\pluto_sys::generatepath( self.origin, goal, self.team, undefined, 192.0 );
 		
 		if ( !isdefined( nodes ) || nodes.size <= 0 )
 		{
@@ -2051,7 +2085,7 @@ initAStar( goal )
 	
 	for ( i = nodes.size - 1; i >= 0; i-- )
 	{
-		node_indexes[ node_indexes.size ] = nodes[ i ] BotBuiltinGetNodeNumber();
+		node_indexes[ node_indexes.size ] = nodes[ i ] scripts\zm\pluto_sys::getnodenumber();
 	}
 	
 	self.bot.astar = node_indexes;
@@ -2146,14 +2180,14 @@ pressADS( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+ads" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+ads" );
 	
 	if ( time )
 	{
 		wait time;
 	}
 	
-	self BotBuiltinBotButtonOverride( "-ads" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-ads" );
 }
 
 /*
@@ -2171,7 +2205,7 @@ frag( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+frag" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+frag" );
 	self.bot.isfragging = true;
 	self.bot.isfraggingafter = true;
 	
@@ -2180,7 +2214,7 @@ frag( time )
 		wait time;
 	}
 	
-	self BotBuiltinBotButtonOverride( "-frag" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-frag" );
 	self.bot.isfragging = false;
 	
 	wait 1.25;
@@ -2194,11 +2228,11 @@ holdbreath( what )
 {
 	if ( what )
 	{
-		self BotBuiltinBotButtonOverride( "+holdbreath" );
+		self scripts\zm\pluto_sys::botbuttonoverride( "+holdbreath" );
 	}
 	else
 	{
-		self BotBuiltinBotButtonOverride( "-holdbreath" );
+		self scripts\zm\pluto_sys::botbuttonoverride( "-holdbreath" );
 	}
 }
 
@@ -2217,7 +2251,7 @@ smoke( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+smoke" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+smoke" );
 	self.bot.issmoking = true;
 	self.bot.issmokingafter = true;
 	
@@ -2226,7 +2260,7 @@ smoke( time )
 		wait time;
 	}
 	
-	self BotBuiltinBotButtonOverride( "-smoke" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-smoke" );
 	self.bot.issmoking = false;
 	
 	wait 1.25;
@@ -2301,14 +2335,14 @@ pressFire( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+fire" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+attack" );
 	
 	if ( time )
 	{
 		wait time;
 	}
 	
-	self BotBuiltinBotButtonOverride( "-fire" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-attack" );
 }
 
 /*
@@ -2321,9 +2355,9 @@ reload()
 	self notify( "bot_reload" );
 	self endon( "bot_reload" );
 	
-	self BotBuiltinBotButtonOverride( "+reload" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+reload" );
 	wait 0.05;
-	self BotBuiltinBotButtonOverride( "-reload" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-reload" );
 }
 
 /*
@@ -2349,14 +2383,14 @@ do_knife_target( target )
 	if ( !getdvarint( "aim_automelee_enabled" ) || !self isonground() || self getstance() == "prone" || self inLastStand() )
 	{
 		self.bot.knifing_target = undefined;
-		self BotBuiltinBotMeleeParams( 0, 0 );
+		self scripts\zm\pluto_sys::botmeleeparams( 0, 0 );
 		return;
 	}
 	
 	if ( !isdefined( target ) || ( !isplayer( target ) && !isai( target ) ) )
 	{
 		self.bot.knifing_target = undefined;
-		self BotBuiltinBotMeleeParams( 0, 0 );
+		self scripts\zm\pluto_sys::botmeleeparams( 0, 0 );
 		return;
 	}
 	
@@ -2365,19 +2399,19 @@ do_knife_target( target )
 	if ( dist > getdvarfloat( "aim_automelee_range" ) )
 	{
 		self.bot.knifing_target = undefined;
-		self BotBuiltinBotMeleeParams( 0, 0 );
+		self scripts\zm\pluto_sys::botmeleeparams( 0, 0 );
 		return;
 	}
 	
 	self.bot.knifing_target = target;
 	
 	angles = vectortoangles( target.origin - self.origin );
-	self BotBuiltinBotMeleeParams( angles[ 1 ], dist );
+	self scripts\zm\pluto_sys::botmeleeparams( angles[ 1 ], dist );
 	
 	wait 1;
 	
 	self.bot.knifing_target = undefined;
-	self BotBuiltinBotMeleeParams( 0, 0 );
+	self scripts\zm\pluto_sys::botmeleeparams( 0, 0 );
 }
 
 /*
@@ -2395,9 +2429,9 @@ knife( target )
 	self.bot.isknifing = true;
 	self.bot.isknifingafter = true;
 	
-	self BotBuiltinBotButtonOverride( "+melee" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+melee" );
 	wait 0.05;
-	self BotBuiltinBotButtonOverride( "-melee" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-melee" );
 	
 	self.bot.isknifing = false;
 	
@@ -2421,14 +2455,14 @@ use( time )
 		time = 0.05;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+activate" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+activate" );
 	
 	if ( time )
 	{
 		wait time;
 	}
 	
-	self BotBuiltinBotButtonOverride( "-activate" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-activate" );
 }
 
 /*
@@ -2447,9 +2481,9 @@ jump()
 		wait 1;
 	}
 	
-	self BotBuiltinBotButtonOverride( "+gostand" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+gostand" );
 	wait 0.05;
-	self BotBuiltinBotButtonOverride( "-gostand" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-gostand" );
 }
 
 /*
@@ -2457,8 +2491,8 @@ jump()
 */
 stand()
 {
-	self BotBuiltinBotButtonOverride( "-gocrouch" );
-	self BotBuiltinBotButtonOverride( "-goprone" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-crouch" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-prone" );
 }
 
 /*
@@ -2466,8 +2500,8 @@ stand()
 */
 crouch()
 {
-	self BotBuiltinBotButtonOverride( "+gocrouch" );
-	self BotBuiltinBotButtonOverride( "-goprone" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+crouch" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-prone" );
 }
 
 /*
@@ -2475,8 +2509,8 @@ crouch()
 */
 prone()
 {
-	self BotBuiltinBotButtonOverride( "-gocrouch" );
-	self BotBuiltinBotButtonOverride( "+goprone" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-crouch" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+prone" );
 }
 
 /*
@@ -2489,7 +2523,7 @@ sprint()
 	self notify( "bot_sprint" );
 	self endon( "bot_sprint" );
 	
-	self BotBuiltinBotButtonOverride( "+sprint" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "+sprint" );
 	wait 0.05;
-	self BotBuiltinBotButtonOverride( "-sprint" );
+	self scripts\zm\pluto_sys::botbuttonoverride( "-sprint" );
 }

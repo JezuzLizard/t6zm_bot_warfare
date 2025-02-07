@@ -1,7 +1,10 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
+#include maps\mp\bots\_bot_api;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 /*
 	Initiates the whole bot scripts.
 */
@@ -236,7 +239,7 @@ handleBots()
 	
 	for ( i = 0; i < bots.size; i++ )
 	{
-		BotBuiltinCmdExec( "clientkick " + bots[ i ] getentitynumber() );
+		scripts\zm\pluto_sys::cmdexec( "clientkick " + bots[ i ] getentitynumber() );
 	}
 }
 
@@ -466,11 +469,11 @@ watchBotDebugEvent()
 				big_str += ", " + g;
 			}
 			
-			BotBuiltinPrintConsole( big_str );
+			scripts\zm\pluto_sys::PrintConsole( big_str );
 		}
 		else if ( msg == "debug" && getdvarint( "bots_main_debug" ) )
 		{
-			BotBuiltinPrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
+			scripts\zm\pluto_sys::PrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
 		}
 	}
 }
@@ -491,7 +494,7 @@ added()
 */
 add_bot()
 {
-	bot = BotBuiltinAddTestClient(); //0x43,0x55,0x4D,0x49,0x4E,0x20,0x4D,0x45
+	bot = scripts\zm\pluto_sys::addtestclient(); //0x43,0x55,0x4D,0x49,0x4E,0x20,0x4D,0x45
 	
 	if ( isdefined( bot ) )
 	{
@@ -671,7 +674,7 @@ addBots_loop()
 			
 			if ( isdefined( tempBot ) )
 			{
-				BotBuiltinCmdExec( "clientkick " + tempBot getentitynumber() + " EXE_PLAYERKICKED" );
+				scripts\zm\pluto_sys::cmdexec( "clientkick " + tempBot getentitynumber() + " EXE_PLAYERKICKED" );
 				
 				wait 0.25;
 			}

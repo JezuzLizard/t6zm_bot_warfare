@@ -1,6 +1,8 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 
+//#inline scripts\zm\pluto_sys;
+//#define PLUTO scripts\zm\pluto_sys
 /*
 	Waits for the built-ins to be defined
 */
@@ -21,191 +23,6 @@ wait_for_builtins()
 		{
 			wait 0.05;
 		}
-	}
-	
-	return false;
-}
-
-/*
-	Prints to console without dev script on
-*/
-BotBuiltinPrintConsole( s )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "printconsole" ] ) )
-	{
-		[[ level.bot_builtins[ "printconsole" ] ]]( s );
-	}
-}
-
-/*
-	Bot action, does a bot action
-	<client> botaction(<action string (+ or - then action like frag or smoke)>)
-*/
-BotBuiltinBotButtonOverride( action )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botaction" ] ) )
-	{
-		self [[ level.bot_builtins[ "botaction" ] ]]( action );
-	}
-}
-
-/*
-	Sets the bot's movement
-	<client> botmovement(<int left>, <int forward>)
-*/
-BotBuiltinBotMovementOverride( left, forward )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmovement" ] ) )
-	{
-		self [[ level.bot_builtins[ "botmovement" ] ]]( left, forward );
-	}
-}
-
-/*
-	Sets melee params
-*/
-BotBuiltinBotMeleeParams( yaw, dist )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmeleeparams" ] ) )
-	{
-		self [[ level.bot_builtins[ "botmeleeparams" ] ]]( yaw, dist );
-	}
-}
-
-/*
-	Sets angles
-*/
-BotBuiltinBotAngles( angles )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botangles" ] ) )
-	{
-		self [[ level.bot_builtins[ "botangles" ] ]]( angles );
-	}
-}
-
-/*
-	Test if is a bot
-*/
-BotBuiltinIsBot()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "isbot" ] ) )
-	{
-		return self [[ level.bot_builtins[ "isbot" ] ]]();
-	}
-	
-	return false;
-}
-
-/*
-	Generates a path
-*/
-BotBuiltinGeneratePath( from, to, team, ignore_ent, best_effort )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "generatepath" ] ) )
-	{
-		return [[ level.bot_builtins[ "generatepath" ] ]]( from, to, team,ignore_ent, best_effort );
-	}
-	
-	return [];
-}
-
-/*
-	Returns function pointer
-*/
-BotBuiltinGetFunction( file, threadname )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getfunction" ] ) )
-	{
-		return [[ level.bot_builtins[ "getfunction" ] ]]( file, threadname );
-	}
-	
-	return undefined;
-}
-
-/*
-*/
-BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setallowedtraversals" ] ) )
-	{
-		[[ level.bot_builtins[ "setallowedtraversals" ] ]]( bot_allowed_negotiation_links );
-	}
-}
-
-/*
-*/
-BotBuiltinSetIgnoredLinks( bot_ignore_links )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setignoredlinks" ] ) )
-	{
-		[[ level.bot_builtins[ "setignoredlinks" ] ]]( bot_ignore_links );
-	}
-}
-
-/*
-*/
-BotBuiltinGetNodeNumber()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getnodenumber" ] ) )
-	{
-		return self [[ level.bot_builtins[ "getnodenumber" ] ]]();
-	}
-	
-	return 0;
-}
-
-/*
-*/
-BotBuiltinGetLinkedNodes()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getlinkednodes" ] ) )
-	{
-		return self [[ level.bot_builtins[ "getlinkednodes" ] ]]();
-	}
-	
-	return [];
-}
-
-/*
-*/
-BotBuiltinAddTestClient()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "addtestclient" ] ) )
-	{
-		return [[ level.bot_builtins[ "addtestclient" ] ]]();
-	}
-	
-	return undefined;
-}
-
-/*
-*/
-BotBuiltinCmdExec( what )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "cmdexec" ] ) )
-	{
-		[[ level.bot_builtins[ "cmdexec" ] ]]( what );
-	}
-}
-
-/*
-*/
-BotBuiltinNotifyOnPlayerCommand( cmd, notif )
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "notifyonplayercommand" ] ) )
-	{
-		self [[ level.bot_builtins[ "notifyonplayercommand" ] ]]( cmd, notif );
-	}
-}
-
-/*
-	waw doesnt have
-*/
-BotBuiltinIsHost()
-{
-	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "ishost" ] ) )
-	{
-		return self [[ level.bot_builtins[ "ishost" ] ]]();
 	}
 	
 	return false;
@@ -235,7 +52,7 @@ doHostCheck()
 	
 	if ( getdvar( "bots_main_firstIsHost" ) != "0" )
 	{
-		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
+		scripts\zm\pluto_sys::PrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
 		
 		if ( getdvar( "bots_main_firstIsHost" ) == "1" )
 		{
@@ -263,417 +80,12 @@ doHostCheck()
 		}
 	}
 	
-	if ( !self BotBuiltinIsHost() && !result )
+	if ( !self ishost() && !result )
 	{
 		return;
 	}
 	
 	self.pers[ "bot_host" ] = true;
-}
-
-/*
-	Returns if the player is a bot.
-*/
-is_bot()
-{
-	return self BotBuiltinIsBot();
-}
-
-/*
-	Set the bot's stance
-*/
-BotSetStance( stance )
-{
-	switch ( stance )
-	{
-		case "stand":
-			self maps\mp\bots\_bot_internal::stand();
-			break;
-			
-		case "crouch":
-			self maps\mp\bots\_bot_internal::crouch();
-			break;
-			
-		case "prone":
-			self maps\mp\bots\_bot_internal::prone();
-			break;
-	}
-}
-
-/*
-	Bot presses the button for time.
-*/
-BotPressAttack( time )
-{
-	self maps\mp\bots\_bot_internal::pressFire( time );
-}
-
-/*
-	Bot presses the ads button for time.
-*/
-BotPressADS( time )
-{
-	self maps\mp\bots\_bot_internal::pressADS( time );
-}
-
-/*
-	Bot presses the use button for time.
-*/
-BotPressUse( time )
-{
-	self maps\mp\bots\_bot_internal::use( time );
-}
-
-/*
-	Bot presses the frag button for time.
-*/
-BotPressFrag( time )
-{
-	self maps\mp\bots\_bot_internal::frag( time );
-}
-
-/*
-	Bot presses the smoke button for time.
-*/
-BotPressSmoke( time )
-{
-	self maps\mp\bots\_bot_internal::smoke( time );
-}
-
-/*
-	Bot jumps
-*/
-BotJump()
-{
-	self maps\mp\bots\_bot_internal::jump();
-}
-
-/*
-	Returns the bot's random assigned number.
-*/
-BotGetRandom()
-{
-	return self.bot.rand;
-}
-
-/*
-	Returns a random number thats different everytime it changes target
-*/
-BotGetTargetRandom()
-{
-	if ( !isdefined( self.bot.target ) )
-	{
-		return undefined;
-	}
-	
-	return self.bot.target.rand;
-}
-
-/*
-	Returns if the bot is fragging.
-*/
-IsBotFragging()
-{
-	return self.bot.isfraggingafter;
-}
-
-/*
-	Returns if the bot is pressing smoke button.
-*/
-IsBotSmoking()
-{
-	return self.bot.issmokingafter;
-}
-
-/*
-	Returns if the bot is sprinting.
-*/
-IsBotSprinting()
-{
-	return self.bot.issprinting;
-}
-
-/*
-	Returns if the bot is reloading.
-*/
-IsBotReloading()
-{
-	return self.bot.isreloading;
-}
-
-/*
-	Is bot knifing
-*/
-IsBotKnifing()
-{
-	return self.bot.isknifingafter;
-}
-
-/*
-	Freezes the bot's controls.
-*/
-BotFreezeControls( what )
-{
-	self.bot.isfrozen = what;
-	
-	if ( what )
-	{
-		self notify( "kill_goal" );
-	}
-}
-
-/*
-	Returns if the bot is script frozen.
-*/
-BotIsFrozen()
-{
-	return self.bot.isfrozen;
-}
-
-/*
-	Bot will stop moving
-*/
-BotStopMoving( what )
-{
-	self.bot.stop_move = what;
-	
-	if ( what )
-	{
-		self notify( "kill_goal" );
-	}
-}
-
-/*
-	Waits till frame end so that if two notifies happen in the same frame, the other will not be missed.
-*/
-BotNotifyBotEvent_( msg, a, b, c, d, e, f, g )
-{
-	self endon( "disconnect" );
-	waittillframeend; // wait for the waittills to setup again
-	self notify( "bot_event", msg, a, b, c, d, e, f, g );
-}
-
-/*
-	Notify the bot chat message
-*/
-BotNotifyBotEvent( msg, a, b, c, d, e, f, g )
-{
-	self thread BotNotifyBotEvent_( msg, a, b, c, d, e, f, g );
-}
-
-/*
-	Does the bot have an objective?
-*/
-BotHasObjective()
-{
-	return self maps\mp\bots\objectives\_utility::HasBotObjective();
-}
-
-/*
-	Returns if the bot has a script goal.
-	(like t5 gsc bot)
-*/
-HasScriptGoal()
-{
-	return ( isdefined( self GetScriptGoal() ) );
-}
-
-/*
-	Returns the pos of the bot's goal
-*/
-GetScriptGoal()
-{
-	return self.bot.script_goal;
-}
-
-/*
-	Sets the bot's goal, will acheive it when dist away from it.
-*/
-SetScriptGoal( goal, dist )
-{
-	if ( !isdefined( dist ) )
-	{
-		dist = 16;
-	}
-	
-	self.bot.script_goal = goal;
-	self.bot.script_goal_dist = dist;
-	waittillframeend;
-	self notify( "new_goal_internal" );
-	self notify( "new_goal" );
-}
-
-/*
-	Clears the bot's goal.
-*/
-ClearScriptGoal()
-{
-	self SetScriptGoal( undefined, 0 );
-}
-
-/*
-	Returns whether the bot has a priority objective
-*/
-HasPriorityObjective()
-{
-	return self.bot.prio_objective;
-}
-
-/*
-	Sets the bot to prioritize the objective over targeting enemies
-*/
-SetPriorityObjective()
-{
-	self.bot.prio_objective = true;
-	self notify( "kill_goal" );
-}
-
-/*
-	Clears the bot's priority objective to allow the bot to target enemies automatically again
-*/
-ClearPriorityObjective()
-{
-	self.bot.prio_objective = false;
-	self notify( "kill_goal" );
-}
-
-/*
-	Sets the aim position of the bot
-*/
-SetScriptAimPos( pos )
-{
-	self.bot.script_aimpos = pos;
-}
-
-/*
-	Clears the aim position of the bot
-*/
-ClearScriptAimPos()
-{
-	self SetScriptAimPos( undefined );
-}
-
-/*
-	Returns the aim position of the bot
-*/
-GetScriptAimPos()
-{
-	return self.bot.script_aimpos;
-}
-
-/*
-	Returns if the bot has a aim pos
-*/
-HasScriptAimPos()
-{
-	return isdefined( self GetScriptAimPos() );
-}
-
-/*
-	Sets the bot's target to be this ent.
-*/
-SetAttacker( att )
-{
-	self.bot.target_this_frame = att;
-}
-
-/*
-	Sets the script enemy for a bot.
-*/
-SetScriptEnemy( enemy, offset )
-{
-	self.bot.script_target = enemy;
-	self.bot.script_target_offset = offset;
-}
-
-/*
-	Removes the script enemy of the bot.
-*/
-ClearScriptEnemy()
-{
-	self SetScriptEnemy( undefined, undefined );
-}
-
-/*
-	Returns the entity of the bot's target.
-*/
-GetThreat()
-{
-	if ( !isdefined( self.bot.target ) )
-	{
-		return undefined;
-	}
-	
-	return self.bot.target.entity;
-}
-
-/*
-	Returns if the bot has a script enemy.
-*/
-HasScriptEnemy()
-{
-	return ( isdefined( self.bot.script_target ) );
-}
-
-/*
-	Returns if the bot has a threat.
-*/
-HasThreat()
-{
-	return ( isdefined( self GetThreat() ) );
-}
-
-/*
-	Returns a valid grenade launcher weapon
-*/
-getValidTube()
-{
-	weaps = self getweaponslist();
-	
-	for ( i = 0; i < weaps.size; i++ )
-	{
-		weap = weaps[ i ];
-		
-		if ( !self getammocount( weap ) )
-		{
-			continue;
-		}
-		
-		if ( issubstr( weap, "gl_" ) && !issubstr( weap, "_gl_" ) )
-		{
-			return weap;
-		}
-	}
-	
-	return undefined;
-}
-
-/*
-	Returns a random grenade in the bot's inventory.
-*/
-getValidGrenade()
-{
-	grenadeTypes = [];
-	grenadeTypes[ grenadeTypes.size ] = "stielhandgranate";
-	
-	possibles = [];
-	
-	for ( i = 0; i < grenadeTypes.size; i++ )
-	{
-		if ( !self hasweapon( grenadeTypes[ i ] ) )
-		{
-			continue;
-		}
-		
-		if ( !self getammocount( grenadeTypes[ i ] ) )
-		{
-			continue;
-		}
-		
-		possibles[ possibles.size ] = grenadeTypes[ i ];
-	}
-	
-	return PickRandom( possibles );
 }
 
 /*
@@ -736,61 +148,6 @@ waittill_either_return( str1, str2 )
 	}
 	
 	return str2;
-}
-
-/*
-	Taken from iw4 script
-*/
-waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
-{
-	if ( ( !isdefined( string1 ) || string1 != "death" ) && ( !isdefined( string2 ) || string2 != "death" ) && ( !isdefined( string3 ) || string3 != "death" ) && ( !isdefined( string4 ) || string4 != "death" ) && ( !isdefined( string5 ) || string5 != "death" ) )
-	{
-		self endon( "death" );
-	}
-	
-	ent = spawnstruct();
-	
-	if ( isdefined( string1 ) )
-	{
-		self thread waittill_string( string1, ent );
-	}
-	
-	if ( isdefined( string2 ) )
-	{
-		self thread waittill_string( string2, ent );
-	}
-	
-	if ( isdefined( string3 ) )
-	{
-		self thread waittill_string( string3, ent );
-	}
-	
-	if ( isdefined( string4 ) )
-	{
-		self thread waittill_string( string4, ent );
-	}
-	
-	if ( isdefined( string5 ) )
-	{
-		self thread waittill_string( string5, ent );
-	}
-	
-	ent thread _timeout( timeOut );
-	
-	ent waittill( "returned", msg );
-	ent notify( "die" );
-	return msg;
-}
-
-/*
-	Used for waittill_any_timeout
-*/
-_timeout( delay )
-{
-	self endon( "die" );
-	
-	wait( delay );
-	self notify( "returned", "timeout" );
 }
 
 /*
@@ -1034,8 +391,8 @@ load_waypoints()
 	}
 	
 	// arrays are passed by value in gsc... hope this isnt gunna run out of vars
-	BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links );
-	BotBuiltinSetIgnoredLinks( bot_ignore_links );
+	scripts\zm\pluto_sys::setallowedtraversals( bot_allowed_negotiation_links );
+	scripts\zm\pluto_sys::setignoredlinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 	
 	level.waypoints = getallnodes();
@@ -1364,7 +721,7 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_laststand", "player_is_in_laststand" );
+	func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_laststand", "player_is_in_laststand" );
 	
 	return self [[ func ]]();
 }
@@ -1374,7 +731,7 @@ inLastStand()
 */
 isReviving( revivee )
 {
-	func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_laststand", "is_reviving" );
+	func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_laststand", "is_reviving" );
 	
 	return self [[ func ]]( revivee );
 }
@@ -1431,7 +788,7 @@ isWeaponPrimary( weap )
 */
 GetPathIsInaccessible( from, to, team, best_effort )
 {
-	path = BotBuiltinGeneratePath( from, to, team, undefined, best_effort );
+	path = scripts\zm\pluto_sys::generatepath( from, to, team, undefined, best_effort );
 	return ( !isdefined( path ) || ( path.size <= 0 ) );
 }
 
@@ -1440,7 +797,7 @@ GetPathIsInaccessible( from, to, team, best_effort )
 */
 get_path_dist( start, end, team )
 {
-	path = BotBuiltinGeneratePath( start, end, team, undefined, 192.0 );
+	path = scripts\zm\pluto_sys::generatepath( start, end, team, undefined, 192.0 );
 	
 	if ( !isdefined( path ) || path.size <= 0 )
 	{

@@ -1,11 +1,8 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
-#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 init()
 {
 	vending_triggers = getentarray( "zombie_vending", "targetname" );
@@ -100,14 +97,14 @@ Finder( eObj )
 			continue;
 		}
 		
-		org = self getOffset( machine );
+		org = self getOffset( machine.origin, machine.angles );
 		
 		if ( GetPathIsInaccessible( self.origin, org ) )
 		{
 			continue;
 		}
 		
-		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, vending );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, vending, vending getentitynumber() );
 	}
 	
 	return answer;
@@ -164,9 +161,9 @@ getPerkCost()
 	return cost;
 }
 
-getOffset( model )
+getOffset( origin, angles )
 {
-	org = model get_angle_offset_node( 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
+	org = get_angle_offset_node( origin, angles, 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
 	
 	return org;
 }
@@ -254,11 +251,11 @@ GoDoPerkMachine( eObj )
 	vending = eObj.eent;
 	machine = vending getMachine();
 	perk = vending getVendingPerk();
-	org = self getOffset( machine );
+	org = self getOffset( machine.origin, machine.angles );
 	
 	// go to machine
 	self thread WatchToGoToMachine( vending );
-	self SetScriptGoalPos( org, 32 );
+	self SetScriptGoal( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

@@ -1,11 +1,8 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
-#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 Finder( eObj )
 {
 	answer = [];
@@ -63,7 +60,7 @@ Finder( eObj )
 			continue;
 		}
 		
-		lid = getent( chest.target, "targetname" );
+		lid = self.chest_lid;
 		
 		if ( !isdefined( lid ) )
 		{
@@ -77,22 +74,22 @@ Finder( eObj )
 			continue;
 		}
 		
-		org = self getOffset( lid );
+		org = self getOffset( lid.origin, lid.angles );
 		
 		if ( GetPathIsInaccessible( self.origin, org ) )
 		{
 			continue;
 		}
 		
-		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, chest );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, chest, chest getentitynumber() );
 	}
 	
 	return answer;
 }
 
-getOffset( model )
+getOffset( origin, angles )
 {
-	org = model get_angle_offset_node( 52, ( 0, 90, 0 ), ( 0, 0, 1 ) );
+	org = get_angle_offset_node( origin, angles, 52, ( 0, 90, 0 ), ( 0, 0, 1 ) );
 	
 	return org;
 }
@@ -186,7 +183,7 @@ GoDoTreasureChest( eObj )
 	chest = eObj.eent;
 	lid = getent( chest.target, "targetname" );
 	weapon_spawn_org = getent( lid.target, "targetname" );
-	org = self getOffset( lid );
+	org = self getOffset( lid.origin, lid.angles );
 	
 	weap = self getcurrentweapon();
 	
@@ -197,7 +194,7 @@ GoDoTreasureChest( eObj )
 	
 	// go to box
 	self thread WatchToGoToChest( chest );
-	self SetScriptGoalPos( org, 32 );
+	self SetScriptGoal( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	
@@ -255,7 +252,7 @@ GoDoTreasureChest( eObj )
 	
 	// go to box
 	self thread WatchToGoToChest( chest );
-	self SetScriptGoalPos( org, 32 );
+	self SetScriptGoal( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	

@@ -1,10 +1,7 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
-#include maps\mp\bots\_bot_api;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 /*
 	Initiates the whole bot scripts.
 */
@@ -163,7 +160,7 @@ init()
 	level.bots_maxshotgundistance = 500;
 	level.bots_maxshotgundistance *= level.bots_maxshotgundistance;
 	
-	//level.players = [];
+	level.players = [];
 	level.bots = [];
 	
 	level.bots_fullautoguns = [];
@@ -184,35 +181,6 @@ init()
 	level thread onPlayerChat();
 	
 	level thread maps\mp\bots\_bot_script::bot_script_init();
-
-
-	//zm specific
-	level.powerup_player_valid_original = level.powerup_player_valid;
-	level.powerup_player_valid = ::handle_bot_powerup_hud;
-
-	level.givecustomloadout_original = level.givecustomloadout;
-	level.givecustomloadout = ::givecustomloadout;
-}
-
-handle_bot_powerup_hud( player )
-{
-	if ( player istestclient() )
-	{
-		//don't do powerup hud for bots
-		return false;
-	}
-
-	if ( !isdefined( level.powerup_player_valid_original ) )
-	{
-		return true;
-	}
-
-	return [[ level.powerup_player_valid_original ]]( player );
-}
-
-givecustomloadout( takeallweapons, alreadyspawned )
-{
-	self [[ level.givecustomloadout_original ]]( takeallweapons, alreadyspawned );
 }
 
 /*
@@ -239,7 +207,7 @@ handleBots()
 	
 	for ( i = 0; i < bots.size; i++ )
 	{
-		scripts\zm\pluto_sys::cmdexec( "clientkick " + bots[ i ] getentitynumber() );
+		BotBuiltinCmdExec( "clientkick " + bots[ i ] getentitynumber() );
 	}
 }
 
@@ -273,7 +241,12 @@ onActorDamage( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, 
 {
 	if ( isdefined( eAttacker ) && isplayer( eAttacker ) && eAttacker is_bot() && getdvarint( "bots_t8_mode" ) && ( !isdefined( self.magic_bullet_shield ) || !self.magic_bullet_shield ) )
 	{
-		iDamage += int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
+		bonus = int( self.maxhealth * randomfloatrange( 0.25, 1.25 ) );
+		
+		if ( bonus > 0 )
+		{
+			iDamage += bonus;
+		}
 	}
 	
 	self [[ level.prevcallbackactordamage ]]( eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, iModelIndex, iTimeOffset );
@@ -314,7 +287,7 @@ onDisconnectAll()
 	
 	self waittill( "disconnect" );
 	
-	//level.players = arrayremovevalue( level.players, self );
+	level.players = array_remove( level.players, self );
 	
 	waittillframeend;
 	
@@ -352,12 +325,7 @@ onDisconnect()
 {
 	self waittill( "disconnect" );
 	
-	level.bots = arrayremovevalue( level.bots, self );
-
-	if ( !isdefined( level.bots ) )
-	{
-		level.bots = [];
-	}
+	level.bots = array_remove( level.bots, self );
 }
 
 /*
@@ -400,14 +368,7 @@ connected()
 		self.pers[ "isBotWarfare" ] = true;
 		self thread added();
 	}
-
-	//zm specific
-	self.equipment_enabled = 0;
-	//bot.team = "allies";
-	self._player_entnum = self getentitynumber();
-	self botclearoverride( true ); //disable engine code
-	self botweaponoverride( true );
-
+	
 	self thread maps\mp\bots\_bot_internal::connected();
 	self thread maps\mp\bots\_bot_script::connected();
 	
@@ -469,11 +430,11 @@ watchBotDebugEvent()
 				big_str += ", " + g;
 			}
 			
-			scripts\zm\pluto_sys::PrintConsole( big_str );
+			BotBuiltinPrintConsole( big_str );
 		}
 		else if ( msg == "debug" && getdvarint( "bots_main_debug" ) )
 		{
-			scripts\zm\pluto_sys::PrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
+			BotBuiltinPrintConsole( "Bot Warfare debug: " + self.playername + ": " + str );
 		}
 	}
 }
@@ -494,16 +455,13 @@ added()
 */
 add_bot()
 {
-	bot = scripts\zm\pluto_sys::addtestclient(); //0x43,0x55,0x4D,0x49,0x4E,0x20,0x4D,0x45
+	bot = BotBuiltinAddTestClient();
 	
 	if ( isdefined( bot ) )
 	{
 		bot.pers[ "isBot" ] = true;
 		bot.pers[ "isBotWarfare" ] = true;
 		bot thread added();
-
-		//zm specific hack to handle Treyarch cringe not waiting for the player be ready
-		bot maps\mp\zombies\_zm::reset_rampage_bookmark_kill_times();
 	}
 }
 
@@ -674,7 +632,7 @@ addBots_loop()
 			
 			if ( isdefined( tempBot ) )
 			{
-				scripts\zm\pluto_sys::cmdexec( "clientkick " + tempBot getentitynumber() + " EXE_PLAYERKICKED" );
+				BotBuiltinCmdExec( "clientkick " + tempBot getentitynumber() + " EXE_PLAYERKICKED" );
 				
 				wait 0.25;
 			}

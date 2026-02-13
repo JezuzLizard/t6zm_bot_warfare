@@ -2,8 +2,6 @@
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 {
 	Answer = spawnstruct();
@@ -19,12 +17,12 @@ CreateObjectiveForManger( sName, fpFinder, fpPriorty, fpExecuter, iProcessRate )
 	return Answer;
 }
 
-CreateFinderObjectiveEZ( eObj, eEnt )
+CreateFinderObjectiveEZ( eObj, eEnt, entnum )
 {
-	return self CreateFinderObjective( eObj, eObj.sname + "_" + eEnt getentitynumber(), eEnt, self [[ eObj.fppriorty ]]( eObj, eEnt ) );
+	return self CreateFinderObjective( eObj, eObj.sname + "_" + entnum, eEnt, self [[ eObj.fppriorty ]]( eObj, eEnt ), entnum );
 }
 
-CreateFinderObjective( eObj, sName, eEnt, fPriority )
+CreateFinderObjective( eObj, sName, eEnt, fPriority, entnum )
 {
 	Answer = spawnstruct();
 	
@@ -32,7 +30,7 @@ CreateFinderObjective( eObj, sName, eEnt, fPriority )
 	Answer.sname = sName;
 	Answer.eent = eEnt;
 	Answer.fpriority = fPriority;
-	Answer.guid = eEnt getentitynumber();
+	Answer.guid = entnum;
 	
 	Answer.bwassuccessful = false;
 	Answer.sreason = "canceled";

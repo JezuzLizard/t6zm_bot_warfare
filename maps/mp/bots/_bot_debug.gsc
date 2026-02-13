@@ -9,10 +9,7 @@
 #include common_scripts\utility;
 #include maps\mp\gametypes_zm\_hud_util;
 #include maps\mp\bots\_bot_utility;
-#include maps\mp\bots\_bot_api;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 init()
 {
 	if ( getdvar( "bots_main_debug" ) == "" )
@@ -30,8 +27,7 @@ init()
 		setdvar( "developer_script", 1 );
 		setdvar( "developer", 2 );
 		
-		setdvar( "sv_mapRotation", "map " + getdvar( "mapname" ) );
-		exitlevel( false );
+		BotBuiltinCmdExec( "devmap " + getdvar( "mapname" ) );
 		return;
 	}
 	
@@ -76,6 +72,7 @@ onPlayerSpawned()
 	for ( ;; )
 	{
 		self waittill( "spawned_player" );
+		self.score = 100000;
 		self thread beginDebug();
 	}
 }
@@ -95,7 +92,7 @@ watch_for_unlink()
 	self endon( "disconnect" );
 	self endon( "zombified" );
 	
-	self scripts\zm\pluto_sys::notifyonplayercommand( "+smoke", "toggle_unlink" );
+	self BotBuiltinNotifyOnPlayerCommand( "toggle_unlink", "+smoke" );
 	
 	for ( ;; )
 	{
@@ -109,7 +106,7 @@ watch_for_unlink()
 		
 		firstwp = level.waypoints[ self.closest ];
 		
-		self iprintln( "wp selected for unlink: " + firstwp scripts\zm\pluto_sys::getnodenumber() );
+		self iprintln( "wp selected for unlink: " + firstwp BotBuiltinGetNodeNumber() );
 		
 		self waittill( "toggle_unlink" );
 		
@@ -139,15 +136,15 @@ array_contains( arr, it )
 toggle_link( firstwp, secondwp )
 {
 	// check if it exists
-	key = firstwp scripts\zm\pluto_sys::getnodenumber() + "";
-	secnum = secondwp scripts\zm\pluto_sys::getnodenumber();
+	key = firstwp BotBuiltinGetNodeNumber() + "";
+	secnum = secondwp BotBuiltinGetNodeNumber();
 	
-	links = firstwp scripts\zm\pluto_sys::getlinkednodes();
+	links = firstwp BotBuiltinGetLinkedNodes();
 	linked = false;
 	
 	for ( i = 0; i < links.size; i++ )
 	{
-		if ( links[ i ] scripts\zm\pluto_sys::getnodenumber() == secnum )
+		if ( links[ i ] BotBuiltinGetNodeNumber() == secnum )
 		{
 			linked = true;
 			break;
@@ -170,12 +167,7 @@ toggle_link( firstwp, secondwp )
 	{
 		a = level.bot_ignore_links[ key ];
 		
-		arrayremovevalue( a, secnum );
-
-		if ( !isdefined( a ) )
-		{
-			a = [];
-		}
+		a = array_remove( a, secnum );
 		
 		if ( a.size <= 0 )
 		{
@@ -187,7 +179,7 @@ toggle_link( firstwp, secondwp )
 		}
 		
 		self iprintln( "removed unlink: " + key + " " + secnum );
-		scripts\zm\pluto_sys::PrintConsole( "toggle_link: add: " + key + " " + secnum );
+		BotBuiltinPrintConsole( "toggle_link: add: " + key + " " + secnum );
 	}
 	else
 	{
@@ -202,7 +194,7 @@ toggle_link( firstwp, secondwp )
 		level.bot_ignore_links[ key ] = a;
 		
 		self iprintln( "added unlink: " + key + " " + secnum );
-		scripts\zm\pluto_sys::PrintConsole( "toggle_link: del: " + key + " " + secnum );
+		BotBuiltinPrintConsole( "toggle_link: del: " + key + " " + secnum );
 	}
 }
 
@@ -232,15 +224,15 @@ debug()
 			
 			if ( distance( level.waypoints[ i ].origin, self.origin ) < getdvarfloat( "bots_main_debug_distance" ) && ( sighttracepassed( myEye, wpOrg, false, self ) || getdvarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getdvarfloat( "bots_main_debug_cone" ) )
 			{
-				linked = level.waypoints[ i ] scripts\zm\pluto_sys::getlinkednodes();
-				node_num_str = level.waypoints[ i ] scripts\zm\pluto_sys::getnodenumber() + "";
+				linked = level.waypoints[ i ] BotBuiltinGetLinkedNodes();
+				node_num_str = level.waypoints[ i ] BotBuiltinGetNodeNumber() + "";
 				
 				for ( h = linked.size - 1; h >= 0; h-- )
 				{
 					if ( isdefined( level.bot_ignore_links[ node_num_str ] ) )
 					{
 						found = false;
-						this_node_num = linked[ h ] scripts\zm\pluto_sys::getnodenumber();
+						this_node_num = linked[ h ] BotBuiltinGetNodeNumber();
 						
 						for ( j = 0; j < level.bot_ignore_links[ node_num_str ].size; j++ )
 						{

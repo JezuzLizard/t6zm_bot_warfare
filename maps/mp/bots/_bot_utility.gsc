@@ -1,8 +1,6 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 /*
 	Waits for the built-ins to be defined
 */
@@ -23,6 +21,242 @@ wait_for_builtins()
 		{
 			wait 0.05;
 		}
+	}
+	
+	return false;
+}
+
+/*
+	Prints to console without dev script on
+*/
+BotBuiltinPrintConsole( s )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "printconsole" ] ) )
+	{
+		[[ level.bot_builtins[ "printconsole" ] ]]( s );
+	}
+}
+
+/*
+	Bot action, does a bot action
+	<client> botaction(<action string (+ or - then action like frag or smoke)>)
+*/
+BotBuiltinBotAction( action )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botaction" ] ) )
+	{
+		self [[ level.bot_builtins[ "botaction" ] ]]( action );
+	}
+}
+
+/*
+	Clears the bot from movement and actions
+	<client> botstop()
+*/
+BotBuiltinBotStop()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botstop" ] ) )
+	{
+		self [[ level.bot_builtins[ "botstop" ] ]]();
+	}
+}
+
+/*
+	Sets the bot's movement
+	<client> botmovement(<int left>, <int forward>)
+*/
+BotBuiltinBotMovement( left, forward )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmovement" ] ) )
+	{
+		self [[ level.bot_builtins[ "botmovement" ] ]]( left, forward );
+	}
+}
+
+/*
+	Sets melee params
+*/
+BotBuiltinBotMeleeParams( yaw, dist )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botmeleeparams" ] ) )
+	{
+		self [[ level.bot_builtins[ "botmeleeparams" ] ]]( yaw, dist );
+	}
+}
+
+/*
+	Sets angles
+*/
+BotBuiltinBotAngles( angles )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "botangles" ] ) )
+	{
+		self [[ level.bot_builtins[ "botangles" ] ]]( angles );
+	}
+}
+
+/*
+	Test if is a bot
+*/
+BotBuiltinIsBot()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "isbot" ] ) )
+	{
+		return self [[ level.bot_builtins[ "isbot" ] ]]();
+	}
+	
+	return false;
+}
+
+/*
+	Generates a path
+*/
+BotBuiltinGeneratePath( from, to, team, best_effort )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "generatepath" ] ) )
+	{
+		return [[ level.bot_builtins[ "generatepath" ] ]]( from, to, team, best_effort );
+	}
+	
+	return [];
+}
+
+/*
+	Returns function pointer
+*/
+BotBuiltinGetFunction( file, threadname )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getfunction" ] ) )
+	{
+		return [[ level.bot_builtins[ "getfunction" ] ]]( file, threadname );
+	}
+	
+	return undefined;
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetMins()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getmins" ] ) )
+	{
+		return self [[ level.bot_builtins[ "getmins" ] ]]();
+	}
+	
+	return ( 0, 0, 0 );
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetMaxs()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getmaxs" ] ) )
+	{
+		return self [[ level.bot_builtins[ "getmaxs" ] ]]();
+	}
+	
+	return ( 0, 0, 0 );
+}
+
+/*
+	waw sp doesnt have
+*/
+BotBuiltinGetGuid()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getguid" ] ) )
+	{
+		return self [[ level.bot_builtins[ "getguid" ] ]]();
+	}
+	
+	return 0;
+}
+
+/*
+*/
+BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setallowedtraversals" ] ) )
+	{
+		[[ level.bot_builtins[ "setallowedtraversals" ] ]]( bot_allowed_negotiation_links );
+	}
+}
+
+/*
+*/
+BotBuiltinSetIgnoredLinks( bot_ignore_links )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "setignoredlinks" ] ) )
+	{
+		[[ level.bot_builtins[ "setignoredlinks" ] ]]( bot_ignore_links );
+	}
+}
+
+/*
+*/
+BotBuiltinGetNodeNumber()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getnodenumber" ] ) )
+	{
+		return self [[ level.bot_builtins[ "getnodenumber" ] ]]();
+	}
+	
+	return 0;
+}
+
+/*
+*/
+BotBuiltinGetLinkedNodes()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "getlinkednodes" ] ) )
+	{
+		return self [[ level.bot_builtins[ "getlinkednodes" ] ]]();
+	}
+	
+	return [];
+}
+
+/*
+*/
+BotBuiltinAddTestClient()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "addtestclient" ] ) )
+	{
+		return [[ level.bot_builtins[ "addtestclient" ] ]]();
+	}
+	
+	return undefined;
+}
+
+/*
+*/
+BotBuiltinCmdExec( what )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "cmdexec" ] ) )
+	{
+		[[ level.bot_builtins[ "cmdexec" ] ]]( what );
+	}
+}
+
+/*
+*/
+BotBuiltinNotifyOnPlayerCommand( cmd, notif )
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "notifyonplayercommand" ] ) )
+	{
+		self [[ level.bot_builtins[ "notifyonplayercommand" ] ]]( cmd, notif );
+	}
+}
+
+/*
+	waw doesnt have
+*/
+BotBuiltinIsHost()
+{
+	if ( isdefined( level.bot_builtins ) && isdefined( level.bot_builtins[ "ishost" ] ) )
+	{
+		return self [[ level.bot_builtins[ "ishost" ] ]]();
 	}
 	
 	return false;
@@ -52,14 +286,14 @@ doHostCheck()
 	
 	if ( getdvar( "bots_main_firstIsHost" ) != "0" )
 	{
-		scripts\zm\pluto_sys::PrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
+		BotBuiltinPrintConsole( "WARNING: bots_main_firstIsHost is enabled" );
 		
 		if ( getdvar( "bots_main_firstIsHost" ) == "1" )
 		{
-			setdvar( "bots_main_firstIsHost", self getguid() );
+			setdvar( "bots_main_firstIsHost", self BotBuiltinGetGuid() );
 		}
 		
-		if ( getdvar( "bots_main_firstIsHost" ) == self getguid() + "" )
+		if ( getdvar( "bots_main_firstIsHost" ) == self BotBuiltinGetGuid() + "" )
 		{
 			result = true;
 		}
@@ -73,19 +307,424 @@ doHostCheck()
 		
 		for ( i = 0; i < guids.size; i++ )
 		{
-			if ( self getguid() + "" == guids[ i ] )
+			if ( self BotBuiltinGetGuid() + "" == guids[ i ] )
 			{
 				result = true;
 			}
 		}
 	}
 	
-	if ( !self ishost() && !result )
+	if ( !self BotBuiltinIsHost() && !result )
 	{
 		return;
 	}
 	
 	self.pers[ "bot_host" ] = true;
+}
+
+/*
+	Returns if the player is a bot.
+*/
+is_bot()
+{
+	return self BotBuiltinIsBot();
+}
+
+/*
+	Set the bot's stance
+*/
+BotSetStance( stance )
+{
+	switch ( stance )
+	{
+		case "stand":
+			self maps\mp\bots\_bot_internal::stand();
+			break;
+			
+		case "crouch":
+			self maps\mp\bots\_bot_internal::crouch();
+			break;
+			
+		case "prone":
+			self maps\mp\bots\_bot_internal::prone();
+			break;
+	}
+}
+
+/*
+	Bot presses the button for time.
+*/
+BotPressAttack( time )
+{
+	self maps\mp\bots\_bot_internal::pressFire( time );
+}
+
+/*
+	Bot presses the ads button for time.
+*/
+BotPressADS( time )
+{
+	self maps\mp\bots\_bot_internal::pressADS( time );
+}
+
+/*
+	Bot presses the use button for time.
+*/
+BotPressUse( time )
+{
+	self maps\mp\bots\_bot_internal::use( time );
+}
+
+/*
+	Bot presses the frag button for time.
+*/
+BotPressFrag( time )
+{
+	self maps\mp\bots\_bot_internal::frag( time );
+}
+
+/*
+	Bot presses the smoke button for time.
+*/
+BotPressSmoke( time )
+{
+	self maps\mp\bots\_bot_internal::smoke( time );
+}
+
+/*
+	Bot jumps
+*/
+BotJump()
+{
+	self maps\mp\bots\_bot_internal::jump();
+}
+
+/*
+	Returns the bot's random assigned number.
+*/
+BotGetRandom()
+{
+	return self.bot.rand;
+}
+
+/*
+	Returns a random number thats different everytime it changes target
+*/
+BotGetTargetRandom()
+{
+	if ( !isdefined( self.bot.target ) )
+	{
+		return undefined;
+	}
+	
+	return self.bot.target.rand;
+}
+
+/*
+	Returns if the bot is fragging.
+*/
+IsBotFragging()
+{
+	return self.bot.isfraggingafter;
+}
+
+/*
+	Returns if the bot is pressing smoke button.
+*/
+IsBotSmoking()
+{
+	return self.bot.issmokingafter;
+}
+
+/*
+	Returns if the bot is sprinting.
+*/
+IsBotSprinting()
+{
+	return self.bot.issprinting;
+}
+
+/*
+	Returns if the bot is reloading.
+*/
+IsBotReloading()
+{
+	return self.bot.isreloading;
+}
+
+/*
+	Is bot knifing
+*/
+IsBotKnifing()
+{
+	return self.bot.isknifingafter;
+}
+
+/*
+	Freezes the bot's controls.
+*/
+BotFreezeControls( what )
+{
+	self.bot.isfrozen = what;
+	
+	if ( what )
+	{
+		self notify( "kill_goal" );
+	}
+}
+
+/*
+	Returns if the bot is script frozen.
+*/
+BotIsFrozen()
+{
+	return self.bot.isfrozen;
+}
+
+/*
+	Bot will stop moving
+*/
+BotStopMoving( what )
+{
+	self.bot.stop_move = what;
+	
+	if ( what )
+	{
+		self notify( "kill_goal" );
+	}
+}
+
+/*
+	Waits till frame end so that if two notifies happen in the same frame, the other will not be missed.
+*/
+BotNotifyBotEvent_( msg, a, b, c, d, e, f, g )
+{
+	self endon( "disconnect" );
+	waittillframeend; // wait for the waittills to setup again
+	self notify( "bot_event", msg, a, b, c, d, e, f, g );
+}
+
+/*
+	Notify the bot chat message
+*/
+BotNotifyBotEvent( msg, a, b, c, d, e, f, g )
+{
+	self thread BotNotifyBotEvent_( msg, a, b, c, d, e, f, g );
+}
+
+/*
+	Does the bot have an objective?
+*/
+BotHasObjective()
+{
+	return self maps\mp\bots\objectives\_utility::HasBotObjective();
+}
+
+/*
+	Returns if the bot has a script goal.
+	(like t5 gsc bot)
+*/
+HasScriptGoal()
+{
+	return ( isdefined( self GetScriptGoal() ) );
+}
+
+/*
+	Returns the pos of the bot's goal
+*/
+GetScriptGoal()
+{
+	return self.bot.script_goal;
+}
+
+/*
+	Sets the bot's goal, will acheive it when dist away from it.
+*/
+SetScriptGoal( goal, dist )
+{
+	if ( !isdefined( dist ) )
+	{
+		dist = 16;
+	}
+	
+	self.bot.script_goal = goal;
+	self.bot.script_goal_dist = dist;
+	waittillframeend;
+	self notify( "new_goal_internal" );
+	self notify( "new_goal" );
+}
+
+/*
+	Clears the bot's goal.
+*/
+ClearScriptGoal()
+{
+	self SetScriptGoal( undefined, 0 );
+}
+
+/*
+	Returns whether the bot has a priority objective
+*/
+HasPriorityObjective()
+{
+	return self.bot.prio_objective;
+}
+
+/*
+	Sets the bot to prioritize the objective over targeting enemies
+*/
+SetPriorityObjective()
+{
+	self.bot.prio_objective = true;
+	self notify( "kill_goal" );
+}
+
+/*
+	Clears the bot's priority objective to allow the bot to target enemies automatically again
+*/
+ClearPriorityObjective()
+{
+	self.bot.prio_objective = false;
+	self notify( "kill_goal" );
+}
+
+/*
+	Sets the aim position of the bot
+*/
+SetScriptAimPos( pos )
+{
+	self.bot.script_aimpos = pos;
+}
+
+/*
+	Clears the aim position of the bot
+*/
+ClearScriptAimPos()
+{
+	self SetScriptAimPos( undefined );
+}
+
+/*
+	Returns the aim position of the bot
+*/
+GetScriptAimPos()
+{
+	return self.bot.script_aimpos;
+}
+
+/*
+	Returns if the bot has a aim pos
+*/
+HasScriptAimPos()
+{
+	return isdefined( self GetScriptAimPos() );
+}
+
+/*
+	Sets the bot's target to be this ent.
+*/
+SetAttacker( att )
+{
+	self.bot.target_this_frame = att;
+}
+
+/*
+	Sets the script enemy for a bot.
+*/
+SetScriptEnemy( enemy, offset )
+{
+	self.bot.script_target = enemy;
+	self.bot.script_target_offset = offset;
+}
+
+/*
+	Removes the script enemy of the bot.
+*/
+ClearScriptEnemy()
+{
+	self SetScriptEnemy( undefined, undefined );
+}
+
+/*
+	Returns the entity of the bot's target.
+*/
+GetThreat()
+{
+	if ( !isdefined( self.bot.target ) )
+	{
+		return undefined;
+	}
+	
+	return self.bot.target.entity;
+}
+
+/*
+	Returns if the bot has a script enemy.
+*/
+HasScriptEnemy()
+{
+	return ( isdefined( self.bot.script_target ) );
+}
+
+/*
+	Returns if the bot has a threat.
+*/
+HasThreat()
+{
+	return ( isdefined( self GetThreat() ) );
+}
+
+/*
+	Returns a valid grenade launcher weapon
+*/
+getValidTube()
+{
+	weaps = self getweaponslist();
+	
+	for ( i = 0; i < weaps.size; i++ )
+	{
+		weap = weaps[ i ];
+		
+		if ( !self getammocount( weap ) )
+		{
+			continue;
+		}
+		
+		if ( issubstr( weap, "gl_" ) && !issubstr( weap, "_gl_" ) )
+		{
+			return weap;
+		}
+	}
+	
+	return undefined;
+}
+
+/*
+	Returns a random grenade in the bot's inventory.
+*/
+getValidGrenade()
+{
+	grenadeTypes = [];
+	grenadeTypes[ grenadeTypes.size ] = "stielhandgranate";
+	
+	possibles = [];
+	
+	for ( i = 0; i < grenadeTypes.size; i++ )
+	{
+		if ( !self hasweapon( grenadeTypes[ i ] ) )
+		{
+			continue;
+		}
+		
+		if ( !self getammocount( grenadeTypes[ i ] ) )
+		{
+			continue;
+		}
+		
+		possibles[ possibles.size ] = grenadeTypes[ i ];
+	}
+	
+	return PickRandom( possibles );
 }
 
 /*
@@ -148,6 +787,61 @@ waittill_either_return( str1, str2 )
 	}
 	
 	return str2;
+}
+
+/*
+	Taken from iw4 script
+*/
+waittill_any_timeout( timeOut, string1, string2, string3, string4, string5 )
+{
+	if ( ( !isdefined( string1 ) || string1 != "death" ) && ( !isdefined( string2 ) || string2 != "death" ) && ( !isdefined( string3 ) || string3 != "death" ) && ( !isdefined( string4 ) || string4 != "death" ) && ( !isdefined( string5 ) || string5 != "death" ) )
+	{
+		self endon( "death" );
+	}
+	
+	ent = spawnstruct();
+	
+	if ( isdefined( string1 ) )
+	{
+		self thread waittill_string( string1, ent );
+	}
+	
+	if ( isdefined( string2 ) )
+	{
+		self thread waittill_string( string2, ent );
+	}
+	
+	if ( isdefined( string3 ) )
+	{
+		self thread waittill_string( string3, ent );
+	}
+	
+	if ( isdefined( string4 ) )
+	{
+		self thread waittill_string( string4, ent );
+	}
+	
+	if ( isdefined( string5 ) )
+	{
+		self thread waittill_string( string5, ent );
+	}
+	
+	ent thread _timeout( timeOut );
+	
+	ent waittill( "returned", msg );
+	ent notify( "die" );
+	return msg;
+}
+
+/*
+	Used for waittill_any_timeout
+*/
+_timeout( delay )
+{
+	self endon( "die" );
+	
+	wait( delay );
+	self notify( "returned", "timeout" );
 }
 
 /*
@@ -311,6 +1005,16 @@ Clamp( a, minv, maxv )
 }
 
 /*
+	converts a string into a float
+*/
+float( num )
+{
+	setdvar( "temp_dvar_bot_util", num );
+	
+	return getdvarfloat( "temp_dvar_bot_util" );
+}
+
+/*
 	returns nodes in playable area
 */
 get_nodes_in_playable_area()
@@ -375,24 +1079,145 @@ is_point_in_playable_area( point )
 load_waypoints()
 {
 	bot_allowed_negotiation_links = [];
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_72";
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_96";
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_120";
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_127";
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_184";
-	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zm_jump_down_190";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_72";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_96";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_120";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_127";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_184";
+	bot_allowed_negotiation_links[ bot_allowed_negotiation_links.size ] = "zombie_jump_down_190";
 	
 	bot_ignore_links = [];
 	
 	switch ( level.script )
 	{
-		default:
+		case "nazi_zombie_sumpf":
+			a = [];
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1603 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1829;
+			bot_ignore_links[ 1604 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1823 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			bot_ignore_links[ 1825 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1826 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1827 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1604;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1829 + "" ] = a;
+			
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1830 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1831 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1833 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1834 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1603;
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			a[ a.size ] = 1906;
+			a[ a.size ] = 1907;
+			bot_ignore_links[ 1837 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1903;
+			a[ a.size ] = 1904;
+			bot_ignore_links[ 1838 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1834;
+			a[ a.size ] = 1837;
+			a[ a.size ] = 1838;
+			bot_ignore_links[ 1903 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1823;
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1827;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1831;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1834;
+			a[ a.size ] = 1837;
+			a[ a.size ] = 1838;
+			bot_ignore_links[ 1904 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1825;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1906 + "" ] = a;
+			
+			a = [];
+			a[ a.size ] = 1826;
+			a[ a.size ] = 1829;
+			a[ a.size ] = 1830;
+			a[ a.size ] = 1833;
+			a[ a.size ] = 1837;
+			bot_ignore_links[ 1907 + "" ] = a;
 			break;
 	}
 	
 	// arrays are passed by value in gsc... hope this isnt gunna run out of vars
-	scripts\zm\pluto_sys::setallowedtraversals( bot_allowed_negotiation_links );
-	scripts\zm\pluto_sys::setignoredlinks( bot_ignore_links );
+	BotBuiltinSetAllowedTraversals( bot_allowed_negotiation_links );
+	BotBuiltinSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 	
 	level.waypoints = getallnodes();
@@ -721,7 +1546,7 @@ random_normal_distribution( mean, std_deviation, lower_bound, upper_bound )
 */
 inLastStand()
 {
-	func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_laststand", "player_is_in_laststand" );
+	func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_laststand", "player_is_in_laststand" );
 	
 	return self [[ func ]]();
 }
@@ -731,7 +1556,7 @@ inLastStand()
 */
 isReviving( revivee )
 {
-	func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_laststand", "is_reviving" );
+	func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_laststand", "is_reviving" );
 	
 	return self [[ func ]]( revivee );
 }
@@ -788,7 +1613,7 @@ isWeaponPrimary( weap )
 */
 GetPathIsInaccessible( from, to, team, best_effort )
 {
-	path = scripts\zm\pluto_sys::generatepath( from, to, team, undefined, best_effort );
+	path = BotBuiltinGeneratePath( from, to, team, best_effort );
 	return ( !isdefined( path ) || ( path.size <= 0 ) );
 }
 
@@ -797,7 +1622,7 @@ GetPathIsInaccessible( from, to, team, best_effort )
 */
 get_path_dist( start, end, team )
 {
-	path = scripts\zm\pluto_sys::generatepath( start, end, team, undefined, 192.0 );
+	path = BotBuiltinGeneratePath( start, end, team, 192.0 );
 	
 	if ( !isdefined( path ) || path.size <= 0 )
 	{
@@ -849,7 +1674,7 @@ ClampLerp( dist, min_dist, max_dist, max_bonus, min_bonus )
 /*
 	Base an origin offset from an ent
 */
-get_angle_offset_node( forward_size, angle_offset, offset )
+get_angle_offset_node( origin, angles, forward_size, angle_offset, offset )
 {
 	if ( !isdefined( forward_size ) )
 	{
@@ -866,14 +1691,14 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 		offset = ( 0, 0, 0 );
 	}
 	
-	angles = ( 0, self.angles[ 1 ], 0 );
+	angles = ( 0, angles[ 1 ], 0 );
 	angles += angle_offset;
-	node = self.origin + ( anglestoforward( angles ) * forward_size ) + offset;
+	node = origin + ( anglestoforward( angles ) * forward_size ) + offset;
 	node = clamp_to_ground( node );
 	
 	if ( getdvarint( "bots_main_debug" ) )
 	{
-		self thread debug_offset_line( node );
+		thread debug_offset_line( origin, node );
 	}
 	
 	return node;
@@ -882,15 +1707,11 @@ get_angle_offset_node( forward_size, angle_offset, offset )
 /*
 	Draw the offset
 */
-debug_offset_line( node )
+debug_offset_line( origin, node )
 {
-	self endon( "death" );
-	self notify( "debug_offset_line" );
-	self endon( "debug_offset_line" );
-	
-	while ( isdefined( self ) )
+	while ( getdvarint( "bots_main_debug" ) )
 	{
-		line( self.origin, node );
+		line( origin, node );
 		wait 0.05;
 	}
 }
@@ -905,8 +1726,8 @@ PointInsideUseTrigger( point )
 		self thread debug_bounding_box_for_ent();
 	}
 	
-	mins = self getmins();
-	maxs = self getmaxs();
+	mins = self BotBuiltinGetMins();
+	maxs = self BotBuiltinGetMaxs();
 	
 	box = spawnstruct();
 	box.x0 = self.origin[ 0 ] + mins[ 0 ];
@@ -945,8 +1766,8 @@ debug_bounding_box_for_ent( color )
 	
 	while ( isdefined( self ) )
 	{
-		mins = self getmins();
-		maxs = self getmaxs();
+		mins = self BotBuiltinGetMins();
+		maxs = self BotBuiltinGetMaxs();
 		
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], mins[ 1 ], maxs[ 2 ] ), color );
 		line( self.origin + ( mins[ 0 ], mins[ 1 ], mins[ 2 ] ), self.origin + ( mins[ 0 ], maxs[ 1 ], mins[ 2 ] ), color );
@@ -976,4 +1797,48 @@ clamp_to_ground( org )
 {
 	trace = playerphysicstrace( org + ( 0, 0, 20 ), org - ( 0, 0, 2000 ) );
 	return trace;
+}
+
+ /* 
+ ============= 
+///ScriptDocBegin
+"Name: array_remove( <ents> , <remover> )"
+"Summary: Returns < ents > array minus < remover > "
+"Module: Array"
+"CallOn: "
+"MandatoryArg: <ents> : array to remove < remover > from"
+"MandatoryArg: <remover> : entity to remove from the array"
+"Example: ents = array_remove( ents, guy );"
+"SPMP: singleplayer"
+///ScriptDocEnd
+ ============= 
+ */ 
+array_remove( ents, remover, keepArrayKeys )
+{
+	newents = []; 
+	 // if this array is a simple numbered array - array keys will return the array in a reverse order
+	 // causing the array that is returned from this function to be flipped, that is an un expected 
+	 // result, which is why we're counting down in the for loop instead of the usual counting up
+	keys = getArrayKeys( ents );
+	
+	//GLocke 2/28/08 - added ability to keep array keys from previous array
+	if(IsDefined(keepArrayKeys))
+	{
+		for( i = keys.size - 1; i >= 0; i -- )
+		{
+			if( ents[ keys[ i ] ] != remover )
+				newents[ keys[i] ] = ents[ keys[ i ] ];
+		}
+		
+		return newents;
+	}
+	
+	// Returns array with index of ints
+	for( i = keys.size - 1; i >= 0; i -- )
+	{
+		if( ents[ keys[ i ] ] != remover )
+			newents[ newents.size ] = ents[ keys[ i ] ];
+	}
+
+	return newents; 
 }

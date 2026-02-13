@@ -1,11 +1,8 @@
 #include common_scripts\utility;
 #include maps\mp\_utility;
 #include maps\mp\bots\_bot_utility;
-#include maps\mp\bots\_bot_api;
 #include maps\mp\bots\objectives\_utility;
 
-//#inline scripts\zm\pluto_sys;
-//#define PLUTO scripts\zm\pluto_sys
 Finder( eObj )
 {
 	answer = [];
@@ -15,7 +12,7 @@ Finder( eObj )
 		return answer;
 	}
 	
-	weapon_spawns = getentarray( "weapon_upgrade", "targetname" );
+	weapon_spawns = level._spawned_wallbuys;
 	
 	if ( !isdefined( weapon_spawns ) || weapon_spawns.size <= 0 )
 	{
@@ -30,6 +27,11 @@ Finder( eObj )
 	{
 		player_has_weapon = false;
 		
+		if ( !isdefined( weapon_spawns[ i ] ) )
+		{
+			continue;
+		}
+
 		if ( !isdefined( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 		{
 			continue;
@@ -47,58 +49,63 @@ Finder( eObj )
 		
 		if ( !player_has_weapon || is_grenade )
 		{
-			func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_weapons", "get_weapon_cost" );
+			func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_weapons", "get_weapon_cost" );
 			
-			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
+			if ( isdefined( level.zombie_weapons[ weapon_spawns[ i ].zombie_weapon_upgrade ] ) && self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
 				continue;
 			}
 		}
 		else
 		{
-			func = scripts\zm\pluto_sys::getfunction( "maps/mp/zombies/_zm_weapons", "get_ammo_cost" );
+			func = BotBuiltinGetFunction( "maps/mp/zombies/_zm_weapons", "get_ammo_cost" );
 			
-			if ( self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
+			if ( isdefined( level.zombie_weapons[ weapon_spawns[ i ].zombie_weapon_upgrade ] ) &&  self.score < [[ func ]]( weapon_spawns[ i ].zombie_weapon_upgrade ) )
 			{
 				continue;
 			}
 		}
 		
-		model = weapon_spawns[ i ];
+		// model = weapon_spawns[ i ];
 		
-		if ( isdefined( weapon_spawns[ i ].target ) )
-		{
-			model = getent( weapon_spawns[ i ].target, "targetname" );
-		}
+		// if ( isdefined( weapon_spawns[ i ].target ) )
+		// {
+		// 	model = getent( weapon_spawns[ i ].target, "targetname" );
+		// }
 		
-		if ( !isdefined( model ) )
-		{
-			continue;
-		}
+		// if ( !isdefined( model ) )
+		// {
+		// 	print( "cannot find a model" );
+		// 	continue;
+		// }
 		
-		org = self getOffset( model, weapon_spawns[ i ] );
+		//org = self getOffset( weapon_spawns[ i ].origin, weapon_spawns[ i ].angles, weapon_spawns[ i ] );
 		
+		org = weapon_spawns[ i ].trigger_stub.origin;
+
 		if ( GetPathIsInaccessible( self.origin, org ) )
 		{
+			print( "cannot find a path" );
 			continue;
 		}
 		
-		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, weapon_spawns[ i ] );
+		answer[ answer.size ] = self CreateFinderObjectiveEZ( eObj, weapon_spawns[ i ], i + 1024 );
+		print( "found a weapon" );
 	}
 	
 	return answer;
 }
 
-getOffset( model, weapon )
+getOffset( origin, angles, weapon )
 {
-	org = model get_angle_offset_node( 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
+	org = get_angle_offset_node( origin, angles, 40, ( 0, -90, 0 ), ( 0, 0, 1 ) );
 	
 	test_org = ( org[ 0 ], org[ 1 ], weapon.origin[ 2 ] );
 	
-	if ( !weapon PointInsideUseTrigger( test_org ) )
-	{
-		org = model get_angle_offset_node( 40, ( 0, 90, 0 ), ( 0, 0, 1 ) );
-	}
+	// if ( !weapon PointInsideUseTrigger( test_org ) )
+	// {
+	// 	org = get_angle_offset_node( origin, angles, 40, ( 0, 90, 0 ), ( 0, 0, 1 ) );
+	// }
 	
 	return org;
 }
@@ -165,6 +172,22 @@ WatchForCancel( weapon )
 	}
 }
 
+InWeaponUnitrigger( weapon )
+{
+	if ( !isdefined( weapon ) || !isdefined( weapon.trigger_stub ) )
+	{
+		assert( false );
+		return false;
+	}
+
+	if ( isdefined( weapon.trigger_stub.playertrigger ) && isdefined( weapon.trigger_stub.playertrigger[ self getentitynumber() ] ) )
+	{
+		return true;
+	}
+
+	return false;
+}
+
 WatchToGoToWeapon( weapon )
 {
 	self endon( "cancel_bot_objective" );
@@ -177,12 +200,15 @@ WatchToGoToWeapon( weapon )
 	for ( ;; )
 	{
 		wait 0.05;
-		
-		if ( self istouching( weapon ) || weapon PointInsideUseTrigger( self.origin ) )
+
+		if ( !self InWeaponUnitrigger() )
 		{
-			self notify( "goal" );
-			break; // is this needed?
+			continue;
 		}
+		
+		self notify( "goal" );
+		print( "IS THIS NEEDED????????" );
+		break; // is this needed?
 	}
 }
 
@@ -191,14 +217,8 @@ GoDoWallweapon( eObj )
 	self endon( "cancel_bot_objective" );
 	
 	weapon = eObj.eent;
-	model = weapon;
 	
-	if ( isdefined( weapon.target ) )
-	{
-		model = getent( weapon.target, "targetname" );
-	}
-	
-	org = self getOffset( model, weapon );
+	org = weapon.trigger_stub.origin;
 	
 	weap = self getcurrentweapon();
 	
@@ -209,7 +229,7 @@ GoDoWallweapon( eObj )
 	
 	// go to weapon
 	self thread WatchToGoToWeapon( weapon );
-	self SetScriptGoalPos( org, 32 );
+	self SetScriptGoal( org, 32 );
 	
 	result = self waittill_any_return( "goal", "bad_path", "new_goal" );
 	
@@ -219,7 +239,7 @@ GoDoWallweapon( eObj )
 		return;
 	}
 	
-	if ( !self istouching( weapon ) && !weapon PointInsideUseTrigger( self.origin ) )
+	if ( !self InWeaponUnitrigger( weapon ) )
 	{
 		eObj.sreason = "not touching weapon";
 		return;

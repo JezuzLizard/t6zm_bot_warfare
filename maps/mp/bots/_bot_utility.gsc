@@ -1014,12 +1014,55 @@ float( num )
 	return getdvarfloat( "temp_dvar_bot_util" );
 }
 
+get_node_num_str()
+{
+	return self BotBuiltinGetNodeNumber() + "";
+}
+
+get_nodes_in_radius_sorted_map( v_origin, max_radius, min_radius, max_height, type, max_nodes )
+{
+	if ( isdefined( max_nodes ) )
+	{
+		waypoints = getnodesinradiussorted( v_origin, max_radius, min_radius, max_height, type, max_nodes );
+	}
+	else if ( isdefined( max_height ) )
+	{
+		waypoints = getnodesinradiussorted( v_origin, max_radius, min_radius, max_height, type );
+	}
+	else
+	{
+		waypoints = getnodesinradiussorted( v_origin, max_radius, min_radius );
+	}
+
+	waypoints_map = [];
+	foreach ( index, node in waypoints )
+	{
+		waypoints_map[ node get_node_num_str() ] = node;
+	}
+
+	return waypoints_map;
+}
+
+get_pathnodes_in_radius_sorted_map( v_origin, max_radius, min_radius, max_height )
+{
+	waypoints_map = get_nodes_in_radius_sorted_map( v_origin, max_radius, min_radius, max_height, "Path" );
+
+	return waypoints_map;
+}
+
+get_pathnodes_in_radius_sorted_map2( v_origin )
+{
+	waypoints_map = get_nodes_in_radius_sorted_map( v_origin, 8192, 0, 512, "Path", 1024 );
+
+	return waypoints_map;
+}
+
 /*
 	returns nodes in playable area
 */
 get_nodes_in_playable_area()
 {
-	total_nodes = getallnodes();
+	total_nodes = getnodesinradiussorted( self.origin, 4096, 0 );
 	filtered_nodes = [];
 	
 	for ( i = 0; i < total_nodes.size; i++ )
@@ -1030,11 +1073,6 @@ get_nodes_in_playable_area()
 		}
 		
 		filtered_nodes[ filtered_nodes.size ] = total_nodes[ i ];
-		
-		if ( ( i % 10 ) == 0 )
-		{
-			wait 0.05;
-		}
 	}
 	
 	return filtered_nodes;
@@ -1220,10 +1258,7 @@ load_waypoints()
 	BotBuiltinSetIgnoredLinks( bot_ignore_links );
 	level.bot_ignore_links = bot_ignore_links;
 	
-	level.waypoints = getallnodes();
-	
-	level.waypointsinplayablearea = [];
-	level.waypointsinplayablearea = get_nodes_in_playable_area();
+	//a_nodes = getnodesinradiussorted( v_origin, max_radius, min_radius, max_height, "pathnodes" );
 }
 
 /*
@@ -1566,12 +1601,13 @@ isReviving( revivee )
 */
 getRandomGoal()
 {
-	if ( !level.waypointsinplayablearea.size )
+	waypoints = self get_nodes_in_playable_area();
+	if ( !waypoints.size )
 	{
 		return self.origin;
 	}
 	
-	return PickRandom( level.waypointsinplayablearea ).origin;
+	return PickRandom( waypoints ).origin;
 }
 
 /*

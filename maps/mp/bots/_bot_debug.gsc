@@ -104,7 +104,8 @@ watch_for_unlink()
 			continue;
 		}
 		
-		firstwp = level.waypoints[ self.closest ];
+		waypoints = get_pathnodes_in_radius_sorted_map2( self.origin );
+		firstwp = waypoints[ self.closest ];
 		
 		self iprintln( "wp selected for unlink: " + firstwp BotBuiltinGetNodeNumber() );
 		
@@ -116,7 +117,7 @@ watch_for_unlink()
 			continue;
 		}
 		
-		self toggle_link( firstwp, level.waypoints[ self.closest ] );
+		self toggle_link( firstwp, waypoints[ self.closest ] );
 	}
 }
 
@@ -212,20 +213,22 @@ debug()
 		closest = -1;
 		myEye = self gettagorigin( "j_head" );
 		myAngles = self getplayerangles();
+
+		waypoints = get_pathnodes_in_radius_sorted_map2( self.origin );
 		
-		for ( i = level.waypoints.size - 1; i >= 0; i-- )
+		for ( i = waypoints.size - 1; i >= 0; i-- )
 		{
-			if ( closest == -1 || closer( self.origin, level.waypoints[ i ].origin, level.waypoints[ closest ].origin ) )
+			if ( closest == -1 || closer( self.origin, waypoints[ i ].origin, waypoints[ closest ].origin ) )
 			{
 				closest = i;
 			}
 			
-			wpOrg = level.waypoints[ i ].origin + ( 0, 0, 25 );
+			wpOrg = waypoints[ i ].origin + ( 0, 0, 25 );
 			
-			if ( distance( level.waypoints[ i ].origin, self.origin ) < getdvarfloat( "bots_main_debug_distance" ) && ( sighttracepassed( myEye, wpOrg, false, self ) || getdvarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getdvarfloat( "bots_main_debug_cone" ) )
+			if ( distance( waypoints[ i ].origin, self.origin ) < getdvarfloat( "bots_main_debug_distance" ) && ( sighttracepassed( myEye, wpOrg, false, self ) || getdvarint( "bots_main_debug_drawThrough" ) ) && getConeDot( wpOrg, myEye, myAngles ) > getdvarfloat( "bots_main_debug_cone" ) )
 			{
-				linked = level.waypoints[ i ] BotBuiltinGetLinkedNodes();
-				node_num_str = level.waypoints[ i ] BotBuiltinGetNodeNumber() + "";
+				linked = waypoints[ i ] BotBuiltinGetLinkedNodes();
+				node_num_str = waypoints[ i ] BotBuiltinGetNodeNumber() + "";
 				
 				for ( h = linked.size - 1; h >= 0; h-- )
 				{
@@ -254,15 +257,15 @@ debug()
 				
 				print3d( wpOrg, node_num_str, ( 1, 0, 0 ), 2 );
 				
-				if ( isdefined( level.waypoints[ i ].animscript ) )
+				if ( isdefined( waypoints[ i ].animscript ) )
 				{
-					line( wpOrg, wpOrg + anglestoforward( level.waypoints[ i ].angles ) * 64, ( 1, 1, 1 ) );
-					print3d( wpOrg + ( 0, 0, 15 ), level.waypoints[ i ].animscript, ( 1, 0, 0 ), 2 );
+					line( wpOrg, wpOrg + anglestoforward( waypoints[ i ].angles ) * 64, ( 1, 1, 1 ) );
+					print3d( wpOrg + ( 0, 0, 15 ), waypoints[ i ].animscript, ( 1, 0, 0 ), 2 );
 				}
 			}
 		}
 		
-		if ( distance( self.origin, level.waypoints[ closest ].origin ) < 64 )
+		if ( distance( self.origin, waypoints[ closest ].origin ) < 64 )
 		{
 			self.closest = closest;
 		}

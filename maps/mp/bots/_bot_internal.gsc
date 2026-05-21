@@ -464,7 +464,7 @@ stance_loop()
 	
 	if ( self.bot.next_wp != -1 )
 	{
-		toStance = level.waypoints[ self.bot.next_wp ].type;
+		toStance = getnodebynumber( self.bot.next_wp ).type;
 	}
 	
 	if ( !isdefined( toStance ) )
@@ -1626,9 +1626,9 @@ aim_loop()
 		return;
 	}
 	
-	if ( self.bot.next_wp != -1 && isdefined( level.waypoints[ self.bot.next_wp ].angles ) && false )
+	if ( self.bot.next_wp != -1 && isdefined( getnodebynumber( self.bot.next_wp ).angles ) && false )
 	{
-		forwardPos = anglestoforward( level.waypoints[ self.bot.next_wp ].angles ) * 1024;
+		forwardPos = anglestoforward( getnodebynumber( self.bot.next_wp ).angles ) * 1024;
 		
 		self thread bot_lookat( eyePos + forwardPos, aimspeed );
 	}
@@ -1642,7 +1642,7 @@ aim_loop()
 		
 		if ( self.bot.second_next_wp != -1 && !self.bot.issprinting && !self.bot.climbing )
 		{
-			lookat = level.waypoints[ self.bot.second_next_wp ].origin;
+			lookat = getnodebynumber( self.bot.second_next_wp ).origin;
 		}
 		else if ( isdefined( self.bot.towards_goal ) )
 		{
@@ -1805,11 +1805,15 @@ doWalk( goal, dist, isScriptGoal )
 	if ( current >= 0 )
 	{
 		// check if a waypoint is closer than the goal
-		if ( distancesquared( self.origin, level.waypoints[ self.bot.astar[ current ] ].origin ) < distancesquared( self.origin, goal ) || distancesquared( level.waypoints[ self.bot.astar[ current ] ].origin, playerphysicstrace( self.origin + ( 0, 0, 32 ), level.waypoints[ self.bot.astar[ current ] ].origin ) ) > 1.0 )
+		current_astar_nodenum = self.bot.astar[ current ];
+		current_node_origin = getnodebynumber( current_astar_nodenum ).origin;
+
+		if ( distancesquared( self.origin, current_node_origin ) < distancesquared( self.origin, goal ) || distancesquared( current_node_origin, playerphysicstrace( self.origin + ( 0, 0, 32 ), current_node_origin ) ) > 1.0 )
 		{
 			while ( current >= 0 )
 			{
-				self.bot.next_wp = self.bot.astar[ current ];
+				current_astar_nodenum = self.bot.astar[ current ];
+				self.bot.next_wp = current_astar_nodenum;
 				self.bot.second_next_wp = -1;
 				
 				if ( current > 0 )
@@ -1819,8 +1823,8 @@ doWalk( goal, dist, isScriptGoal )
 				
 				self notify( "new_static_waypoint" );
 				
-				self movetowards( level.waypoints[ self.bot.next_wp ].origin );
-				self.bot.last_next_wp = self.bot.next_wp;
+				self movetowards( getnodebynumber( current_astar_nodenum ).origin );
+				self.bot.last_next_wp = current_astar_nodenum;
 				self.bot.last_second_next_wp = self.bot.second_next_wp;
 				
 				current = self removeAStar();
